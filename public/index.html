@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sign-In</title>
+
+
+    <!-- <meta name="google-signin-client_id" content="426483469735-ug82g0ulqqe2cvhba611fpq3cvnvvn0c.apps.googleusercontent.com"> -->
+</head>
+
+<body>
+    <h1>Google Sign-In</h1>
+    <hr>
+    <!-- This Google Sign In method is deprecated -->
+    <!-- <div class="g-signin2" data-onsuccess="onSignIn"></div> -->
+    
+    <!-- <script src="https://apis.google.com/js/platform.js" async defer></script> --> 
+    <script src="https://accounts.google.com/gsi/client" 
+    onload="console.log('TODO: add onload function')"
+    asyn defer>  
+    </script>
+
+    <!-- <script src="https://accounts.google.com/gsi/client" async defer></script> -->
+   
+    <div id="g_id_onload"
+         data-client_id="426483469735-ca6adbntueg0v892u3p15gmc05m4jr0a.apps.googleusercontent.com"
+         data-callback="HandleCredentialResponse"
+         ux_mode="redirect"
+         login_uri="http://localhost:8080">
+    </div>
+
+    
+    <div class="g_id_signin" data-type="standard"  ></div>
+    
+    
+    <!-- <div id="g_id_signout"
+    data-client_id="426483469735-ca6adbntueg0v892u3p15gmc05m4jr0a.apps.googleusercontent.com"
+    data-callback="HandleRevokeResponse">
+    </div> -->
+    <!-- <div class="g_id_signout" >Sign Out</div>  -->
+
+    <!-- <div class="g-signout" data-onsuccess="onSignOut"></div>  --> -->
+    <!-- <div class="g_id_signout" data-onsuccess="onSignOut" >Sign Out</div> -->
+    <!-- <a href="#" onclick="signOut();">Sign out</a> -->
+    
+     <a href="#" onclick="signOut();">Sign out</a> -->
+
+
+     <script>
+
+        // let credential;
+        console.log(window.location);
+         let url =window.location.hostname.includes('localhost')
+         ? 'http://localhost:8080/api/auth/google'
+           :'https://rest-server-complet-crud-ana.herokuapp.com/api/auth/google';
+
+        function HandleCredentialResponse(response) {
+            credential=parseJwt(response.credential);
+            let id_token = response.credential;
+            console.log('Signed in as : ', credential.email); // Do not send to your backend! Use an ID token instead.
+              console.log('Name:' + credential.name);
+              console.log('Picture: ' + credential.picture);
+              console.log('Email: ' + credential.email);
+            const data = {id_token};            
+           
+            fetch (url, {
+                method : 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body:JSON.stringify(data)
+
+            }) 
+            .then(resp    => resp.json())
+            .then(data=>console.log('Nuestro server',data))
+            .catch(console.log );
+
+
+
+
+        }
+        function parseJwt(token) {
+            try {
+                return JSON.parse(atob(token.split('.')[1]));
+            } catch (e) {
+                return null;
+            }
+        };
+
+            
+        function signOut() {
+            
+            console.log('Sign out');
+            google.accounts.id.revoke(credential.email, done => {
+            console.log('Signed out as ' + credential.email);
+            });
+            
+        }   
+          
+
+
+    </script> 
+</body>
+</html>
